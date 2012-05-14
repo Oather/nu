@@ -1905,19 +1905,19 @@ module.exports = (function(){
       }
       
       
-          var str     = function(a)       					{ return a.join("") }
-          var cons    = function(a, as)   					{ return [a].concat(as) }
-      				
-      	// ast                                  			
-      	var call	= function(n, as)						{ return { tag: "call", name: n, args: as} }
-          var ident	= function(n)							{ return { tag: "ident", name: n} }
-      	var defFun	= function(n, as, ss)					{ return { tag: "define", name: n, args: as, body: ss} }
-      	var scope	= function(ss)							{ return { tag: 'scope', ss: ss } }
-          			
-      	var binOp	= function(n, l, r)						{ return call(n, [l, r]) }
-      	var unaryOp	= function(n, r)						{ return call(n, [r]) }
-      	var ternaryOp = function(e, l, r)					{ return { tag: '?', expr: e, left: l, right: r} }
-      	var specialBinOp = function(n, l, r)				{ return { tag: n, left: l, right: r } }
+          var str     = function(a)                         { return a.join("") }
+          var cons    = function(a, as)                     { return [a].concat(as) }
+                    
+        // ast                                              
+        var call    = function(n, as)                       { return { tag: "call", name: n, args: as} }
+          var ident = function(n)                           { return { tag: "ident", name: n} }
+        var defFun  = function(n, as, ss)                   { return { tag: "define", name: n, args: as, body: ss} }
+        var scope   = function(ss)                          { return { tag: 'scope', ss: ss } }
+                    
+        var binOp   = function(n, l, r)                     { return call(n, [l, r]) }
+        var unaryOp = function(n, r)                        { return call(n, [r]) }
+        var ternaryOp = function(e, l, r)                   { return { tag: '?', expr: e, left: l, right: r} }
+        var specialBinOp = function(n, l, r)                { return { tag: n, left: l, right: r } }
       
       
       var result = parseFunctions[startRule]();

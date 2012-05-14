@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<title>Turtle Turtle</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Turtle Turtle</title>
 </head>
 
 <ul>
@@ -46,28 +46,28 @@ var numIterations;
 numIterations := 6;
 
 define unitTri() {
-	forward(1);
-	left(120);
-	forward(1);
-	left(120);
-	forward(1);
+    forward(1);
+    left(120);
+    forward(1);
+    left(120);
+    forward(1);
 }
 
 define tri(n) {
- 	push();
-	n := n - 1;
- 	if (n == 0) unitTri();
- 	if (n > 0) {
-		scale(1/2);
-		tri(n);
-		move(0, 1);
-		tri(n);
-		left(120);
-		move(0, 1);
-		right(120);
-		tri(n);
-	}
-	pop();
+    push();
+    n := n - 1;
+    if (n == 0) unitTri();
+    if (n > 0) {
+        scale(1/2);
+        tri(n);
+        move(0, 1);
+        tri(n);
+        left(120);
+        move(0, 1);
+        right(120);
+        tri(n);
+    }
+    pop();
 }
 
 right(90);
@@ -89,61 +89,61 @@ tri(numIterations);
 
 <script src="http://nathansuniversity.com/js/raphael-min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var module = {exports : undefined}
+    var module = {exports : undefined}
 </script>
 <script src="turtle.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var parseM = module.exports
-	var module = {exports : undefined}
+    var parseM = module.exports
+    var module = {exports : undefined}
 </script>
 <script src="eval.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var evalM = module.exports
-	var module = {exports : undefined}
+    var evalM = module.exports
+    var module = {exports : undefined}
 </script>
 <script src="libturtle.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var libturtleM = module.exports
-	var module = {exports : undefined}
-	
-	var context = Raphael('turtlecanvas');
-	
-	function doEval() {
-		try {
-			document.eval.log.value = '';
-			var log = function() {
-				document.eval.log.value += 
-					Array.prototype.map.call(arguments, function(x){return is_str(x) ? x : JSON.stringify(x)}).join(' ') + "\n";
-			}
-			var opts = {log : log, trace : document.eval.trace.checked};
-			
-			libturtleM.init(context);
-			context.clear();
-			
-			// center +ve up
-			libturtleM.lib.move(300, 300);
-			libturtleM.lib.rot(Math.PI);
-			
-			opts.env = libturtleM.lib;
-			
-			document.eval.result.value = JSON.stringify(
-				evalM.eval(
-					parseM.parse(document.eval.input.value),
-					opts ) );
-			if(document.eval.environment)
-				document.eval.environment.value = 
-					envToArray(defEnv.o).map(function(x){
-						return '' + x.n + '\t= ' + 
-							(is_func(x.v) ? x.v.toString() : is_str(x.v) ? x.v: JSON.stringify(x.v))
-						}).join("\n")
-		}
-		catch(e)
-		{
-			document.eval.result.value = '';
-			document.eval.log.value = e;
-			throw e;
-		}
-	}
+    var libturtleM = module.exports
+    var module = {exports : undefined}
+    
+    var context = Raphael('turtlecanvas');
+    
+    function doEval() {
+        try {
+            document.eval.log.value = '';
+            var log = function() {
+                document.eval.log.value += 
+                    Array.prototype.map.call(arguments, function(x){return is_str(x) ? x : JSON.stringify(x)}).join(' ') + "\n";
+            }
+            var opts = {log : log, trace : document.eval.trace.checked};
+            
+            libturtleM.init(context);
+            context.clear();
+            
+            // center +ve up
+            libturtleM.lib.move(300, 300);
+            libturtleM.lib.rot(Math.PI);
+            
+            opts.env = libturtleM.lib;
+            
+            document.eval.result.value = JSON.stringify(
+                evalM.eval(
+                    parseM.parse(document.eval.input.value),
+                    opts ) );
+            if(document.eval.environment)
+                document.eval.environment.value = 
+                    envToArray(defEnv.o).map(function(x){
+                        return '' + x.n + '\t= ' + 
+                            (is_func(x.v) ? x.v.toString() : is_str(x.v) ? x.v: JSON.stringify(x.v))
+                        }).join("\n")
+        }
+        catch(e)
+        {
+            document.eval.result.value = '';
+            document.eval.log.value = e;
+            throw e;
+        }
+    }
 </script>
 
 </html>
