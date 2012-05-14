@@ -116,7 +116,7 @@ var evalScheemN = evalScheem
 var evalScheemS = function(e, o)
 {
 	if(o == undefined) o = {}
-	var log = alias_f(o.log ? o.log : console.log);
+	var log = o.log ? o.log : console.log.bind(console);
 	
 	var env = shallow_copy(defEnv)
 	
