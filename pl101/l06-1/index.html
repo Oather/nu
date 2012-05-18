@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
+    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<title>Turtle Turtle</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Turtle Turtle</title>
 </head>
 
 <ul>
@@ -35,47 +35,82 @@
 
 
 <form name="eval" action="">
-<input type="button" name="run" value="run" id="run" onclick="doEval()">
-<input type="checkbox" name="trace" value="0" id="trace"><label for="trace">log eval trace</label>
-
-<br>
-<label for="input">input:</label><br>
-<textarea id="input" name="input" rows="20" cols="80">
-// Sierpinski triangle (http://en.wikipedia.org/wiki/Sierpinski_triangle)
+<label for="example">load example:</label><select name="example" id="example" onchange="document.eval.input.value = document.eval.example.value">
+	<option selected value='// Sierpinski triangle (http://en.wikipedia.org/wiki/Sierpinski_triangle)
 var numIterations;
 numIterations := 6;
 
 define unitTri() {
-	forward(1);
-	left(120);
-	forward(1);
-	left(120);
-	forward(1);
+	// with enough iterations it doesn&#x27; matter what is drawn here
+    forward(1);
+    left(120);
+    forward(1);
+    left(120);
+    forward(1);
 }
 
 define tri(n) {
- 	push();
-	n := n - 1;
- 	if (n == 0) unitTri();
- 	if (n > 0) {
-		scale(1/2);
-		tri(n);
-		move(0, 1);
-		tri(n);
-		left(120);
-		move(0, 1);
-		right(120);
-		tri(n);
-	}
-	pop();
+    push();
+    n := n - 1;
+    if (n == 0)
+		unitTri();
+    if (n &gt; 0) {
+        scale(1/2);
+        tri(n);
+        move(0, 1);
+        tri(n);
+        left(120);
+        move(0, 1);
+        right(120);
+        tri(n);
+    }
+    pop();
 }
 
 right(90);
 scale(500);
 move(-.42, -.5);
-tri(numIterations);
+tri(numIterations);'>Sierpinski Triangle</option>
+	<option value='
+// McLeopold Fractal Tree (http://nathansuniversity.com/vanilla/discussion/comment/1495#Comment_1495)
+define curve(size, angle, scale, count) {
+		if (count &gt; 0) {
+		forward(size);
+		left(angle);
+		curve(size * scale, angle, scale, count - 1);
+ 
+		right(90);
+		curve(size * scale * scale, angle, scale, count - 1);
+		left(90);
+ 
+		right(angle);
+		right(180);
+		forward(size);
+		left(180);
+	}
+}
+ 
+right(180);
+forward(100);
+right(180);
+curve(100, 29, 0.80, 10);
+'>Tree</option>
+</select>
 
+<br>
+<label for="input">input:</label><br>
+<textarea id="input" name="input" rows="20" cols="80">
 </textarea><br>
+
+<input type="button" name="run" value="run" id="run" onclick="doEval()">
+<label for="animate">speed:</label><select name="animate" id="animate">
+	<option value='0'>African Swallow</option>
+	<option selected value='10'>Cheetah</option>
+	<option value='30'>Llama</option>
+	<option value='75'>Rabbit</option>
+	<option value='200'>Turtle</option>
+</select>
+<br>
 <div id="turtlecanvas" style="width:600px; height:600px; background-color: #eee;"></div>
 <label for="result">result:</label><br>
 <textarea id="result" name="result" rows="2" cols="80" readonly></textarea><br>
@@ -89,61 +124,83 @@ tri(numIterations);
 
 <script src="http://nathansuniversity.com/js/raphael-min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var module = {exports : undefined}
-</script>
-<script src="turtle.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" charset="utf-8">
-	var parseM = module.exports
-	var module = {exports : undefined}
-</script>
-<script src="eval.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" charset="utf-8">
-	var evalM = module.exports
-	var module = {exports : undefined}
-</script>
-<script src="libturtle.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" charset="utf-8">
-	var libturtleM = module.exports
-	var module = {exports : undefined}
+	var is_str      = function(e)       { return typeof e === 'string' }
+    var pop_front   = function(a)       { return a.splice(0, 1)[0] }
+    
+    var context = Raphael('turtlecanvas');
 	
-	var context = Raphael('turtlecanvas');
+	document.eval.input.value = document.eval.example.value;
 	
-	function doEval() {
-		try {
-			document.eval.log.value = '';
-			var log = function() {
-				document.eval.log.value += 
-					Array.prototype.map.call(arguments, function(x){return is_str(x) ? x : JSON.stringify(x)}).join(' ') + "\n";
-			}
-			var opts = {log : log, trace : document.eval.trace.checked};
+	var drawIntervalId = undefined;
+	
+    function doEval() {
+        try {
+			clearInterval(drawIntervalId);
+			drawIntervalId = undefined;
 			
-			libturtleM.init(context);
+			var paths = [];
+			
 			context.clear();
 			
-			// center +ve up
-			libturtleM.lib.move(300, 300);
-			libturtleM.lib.rot(Math.PI);
+            document.eval.log.value = '';
+            var log = function() {
+                document.eval.log.value += 
+                    Array.prototype.map.call(arguments, function(x){return is_str(x) ? x : JSON.stringify(x)}).join(' ') + "\n";
+            }
 			
-			opts.env = libturtleM.lib;
+			var drawNext = function() {
+				if(paths.length == 0) {
+					drawIntervalId = undefined;
+					return;
+				}
+				context.path( pop_front(paths) );
+				if(document.eval.animate.value == 0)
+					drawNext();
+				drawIntervalId = setTimeout(drawNext, document.eval.animate.value);
+			}
+    		
+			var worker = new Worker('worker.js');
+			worker.onmessage = function(event) {
+				
+				for(var i in event.data)
+				{
+					var d = event.data[i];
+					
+					switch (i)
+					{
+						case 'start':
+							return log('running...');
+						case 'path':
+							paths.push(d);
+							if(document.eval.animate.value == 0)
+								context.path(d);
+							else if(drawIntervalId === undefined)
+								drawIntervalId = setTimeout(drawNext, document.eval.animate.value);
+							return;
+						case 'log':
+							return log(d);
+						case 'done':
+							log('done');
+							document.eval.result.value = d;
+							return;
+						case 'error':
+				            document.eval.result.value = 'error';
+				            log(d);
+							return;
+					}
+				}
+			};
 			
-			document.eval.result.value = JSON.stringify(
-				evalM.eval(
-					parseM.parse(document.eval.input.value),
-					opts ) );
-			if(document.eval.environment)
-				document.eval.environment.value = 
-					envToArray(defEnv.o).map(function(x){
-						return '' + x.n + '\t= ' + 
-							(is_func(x.v) ? x.v.toString() : is_str(x.v) ? x.v: JSON.stringify(x.v))
-						}).join("\n")
-		}
-		catch(e)
-		{
-			document.eval.result.value = '';
-			document.eval.log.value = e;
-			throw e;
-		}
-	}
+			worker.postMessage( { run : document.eval.input.value} );
+			
+        }
+        catch(e)
+        {
+            document.eval.result.value = '';
+            document.eval.log.value = e;
+            throw e;
+        }
+    }
 </script>
 
 </html>
